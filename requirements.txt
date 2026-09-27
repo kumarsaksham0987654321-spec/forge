@@ -1,2 +1,13 @@
 streamlit
 httpx
+BeautifulSoup
+analyze_news_bias
+time
+st
+streamlit
+httpx
+beautifulsoup4
+pillow
+pydantic
+google-genai
+python-dotenv
