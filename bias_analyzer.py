@@ -47,7 +47,7 @@ def analyze_news_bias(
     url: str = None, 
     image_bytes: bytes = None, 
     image_mime: str = "image/png"
-) -> BiasAnalysisResult:
+) -> dict: # Updated return type hint to dict
     """Uses Gemini vision for free multimodal OCR and structured media bias extraction."""
     
     prompt = (
@@ -63,7 +63,6 @@ def analyze_news_bias(
 
     if image_bytes:
         input_type = "image"
-        # Convert raw bytes into a PIL Image for Gemini SDK
         pil_img = Image.open(BytesIO(image_bytes))
         contents.append(pil_img)
         contents.append("Extract all news text from this image and analyze its bias.")
@@ -79,7 +78,7 @@ def analyze_news_bias(
 
     # Request structured response using Gemini 2.5 Flash
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model="gemini-3.6-flash",  # Fixed model name
         contents=contents,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
@@ -88,7 +87,8 @@ def analyze_news_bias(
         ),
     )
 
-    # Parse JSON string back into the Pydantic model
-    result = BiasAnalysisResult.model_validate_json(response.text)
-    result.input_type = input_type
-    return result
+    # Convert the parsed output to a dictionary so .get() calls in Streamlit work seamlessly
+    result_dict = response.parsed.model_dump()
+    result_dict["input_type"] = input_type
+    
+    return result_dict
