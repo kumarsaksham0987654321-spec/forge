@@ -1,6 +1,5 @@
 streamlit
 httpx
-BeautifulSoup
 analyze_news_bias
 time
 st
